@@ -1,0 +1,1162 @@
+@font-face {
+    font-family: 'Aqum';
+    src: url('font/Aqum/Aqum.eot');
+    src: local('Aqum'),
+        url('font/Aqum/Aqum.eot?#iefix') format('embedded-opentype'),
+        url('font/Aqum/Aqum.woff2') format('woff2'),
+        url('font/Aqum/Aqum.woff') format('woff'),
+        url('font/Aqum/Aqum.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Rogalik';
+    src: url('font/Rogalik/Rogalik-Regular.eot');
+    src: local('Rogalik Regular'), local('Rogalik-Regular'),
+        url('font/Rogalik/Rogalik-Regular.eot?#iefix') format('embedded-opentype'),
+        url('font/Rogalik/Rogalik-Regular.woff2') format('woff2'),
+        url('font/Rogalik/Rogalik-Regular.woff') format('woff'),
+        url('font/Rogalik/Rogalik-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{
+	margin: 0;
+}
+
+*,
+html * /* override x.xhtml.ru style */ 
+{
+  scrollbar-width: thin;
+  scrollbar-color: #4CB26D rgba(21, 21, 21, 0.20);
+}
+
+*::-webkit-scrollbar,
+html *::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+}
+*::-webkit-scrollbar-track,
+html *::-webkit-scrollbar-track {
+  background: rgba(21, 21, 21, 0.20);
+}
+*::-webkit-scrollbar-thumb,
+html *::-webkit-scrollbar-thumb {
+  background-color: #4CB26D;
+  border-radius: 5px;
+/*  border: 3px solid rgba(21, 21, 21, 0.20);*/
+}
+
+p{
+	margin: 0;
+}
+
+.rogalik{
+	font-family: 'Rogalik';
+}
+
+.whiteStrokeText{
+	position: relative;
+	-webkit-text-stroke: 11px #fff;
+}
+.whiteStrokeText::before{
+	content: attr(data-text);
+    position: absolute;
+    color: #2D79BE;
+    -webkit-text-stroke: 0px;
+}
+
+
+.gameWrapper{
+	position: relative;
+	min-height: 100vh;
+	max-height: 100vh;
+	font-family: 'Aqum';
+	background: #005CE2;
+	overflow: hidden;
+}
+
+.gameWrapper > *{
+	min-height: 100vh;
+}
+
+.scrollableContent{
+	height: calc(100vh - 106px);
+	overflow: auto;
+}
+.gameWrapper.horizontal .scrollableContent{
+	height: calc(100vh - 58px);
+}
+
+.purple{
+	background: #C275AE;
+}
+.orange{
+	background: #F18918;
+}
+.blue{
+	background: #2D79BE;
+}
+.red{
+	background: #E7334B;
+}
+.green{
+	background: #4CB26D;
+}
+.yellow{
+	background: #FBD700;
+}
+.gray{
+	background: #5B5A5B;
+}
+
+.btn{
+	border: none;
+	border-radius: 9px;
+	font-family: Aqum;
+	text-align: center;
+	box-shadow: 0px 2px 4px 0px rgba(21, 21, 21, 0.20);
+}
+@media(max-width: 384px){
+	.btn{
+		font-size: 14px !important;
+	}
+}
+.centerBtn{
+	display: block;
+	margin: 0 auto;
+}
+.btn.green{
+	color: #fff;
+}
+.btn.gray{
+	color: #fff;
+}
+.btn.yellow{
+	color: #2D79BE;
+}
+
+.bgDarkBlue{
+	background: url(img/bg-dark-blue.png) center;
+    background-size: cover;
+}
+.bgBlue{
+	background: url(img/bg-blue.png) center;
+    background-size: cover;
+}
+.bgGray{
+	background: url(img/bg-gray.png) center;
+    background-size: cover;
+}
+
+.logo{
+	padding: 30px 0 0;
+	text-align: center;
+}
+@media(max-height: 600px){
+   .logo img{
+       height: 150px;
+   }
+}
+.gameWrapper.horizontal .logo{
+	padding: 15px 0 0;
+}
+.gameWrapper.horizontal .logo img{
+	height: 156px;
+	transform: rotate(9deg);
+}
+
+.startPageBtns{
+	position: relative;
+	z-index: 2;
+}
+.gameWrapper.horizontal .startPageBtns{
+	margin-top: 50px;
+}
+@media(max-height: 350px){
+   .gameWrapper.horizontal .startPageBtns{
+		margin-top: 15px;
+	}
+}
+
+.startPageBtns .btn{
+	width: 150px;
+	margin-bottom: 14px;
+	padding: 13px 20px;
+	font-size: 20px;
+}
+.gameWrapper.horizontal .startPageBtns .btn{
+	margin-left: 48%;
+}
+
+
+.topInnerPageNav{
+	display: flex;
+	justify-content: space-between;
+	padding: 52px 36px 22px;
+	color: #fff;
+}
+.gameWrapper.horizontal .topInnerPageNav{
+	padding: 13px 27px 13px;
+}
+
+.topInnerPageNavTitle{
+	text-align: right;
+	font-size: 20px;
+	font-weight: 700;
+}
+.backArrowButton{
+	background: none;
+    border: none;
+}
+
+
+.rulesPage .scrollableContent{
+	margin-top: -10px;
+	height: calc(100vh - 96px);
+}
+.gameWrapper.horizontal .rulesPage .scrollableContent{
+	height: calc(100vh - 48px);
+}
+.rulesList{
+	padding: 10px 36px 0;
+}
+.gameWrapper.horizontal .rulesList{
+	padding: 10px 35px 0 25px;
+}
+.rule{
+	position: relative;
+	margin-bottom: 20px;
+	padding: 9px 32px 9px 14px;
+	border-radius: 9px;
+	box-shadow: 0px 2px 4px 0px rgba(21, 21, 21, 0.20);
+	color: #FFF;
+	font-family: Aqum;
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.18; 
+}
+@media(max-width: 384px){
+	.rule{
+		font-size: 14px;
+	}
+}
+.gameWrapper.horizontal .rule{
+	margin-bottom: 15px;
+	font-size: 13px;
+}
+
+.ruleNumber{
+	position: absolute;
+	right: -12px;
+	top: -10px;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 9px;
+	background: #FBD700;
+	color: #2D79BE;
+	text-align: center;
+	font-size: 25px;
+	font-weight: 700;
+	line-height: 1;
+}
+.rulesPageStartBtnWrap{
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+	padding: 0 32px;
+}
+.gameWrapper.horizontal .rulesPageStartBtnWrap{
+	justify-content: flex-end;
+	margin-bottom: 20px;
+}
+.rulesPage .btn{
+	padding: 13px 22px;
+	font-size: 20px;
+}
+
+
+
+.gameWrapper.horizontal .playersPage .scrollableContent{
+	height: calc(100vh - 28px);
+}
+
+.gameWrapper.horizontal .playersPageWrap.empty{
+	display: flex;
+    flex-direction: column;
+    height: calc(100vh - 58px);
+    justify-content: center;
+}
+.gameWrapper.horizontal .playersPage .scrollableContent{
+	margin-top: -30px;
+}
+.playersPageTitle{
+	margin-bottom: 60px;
+	color: #FFF;
+	text-align: center;
+	font-size: 30px;
+	line-height: 1.2;
+}
+@media(max-width: 384px){
+   .playersPageTitle{
+   	    font-size: 24px;
+   }
+}
+.gameWrapper.horizontal .playersPageTitle{
+	margin: 0 0 30px;
+}
+
+.playersListElem{
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    width:  270px;
+    max-width: calc(96% - 30px);
+    margin: 0 auto 20px;
+    padding: 14px 15px;
+    color: #fff;
+    border-radius: 9px;
+    box-shadow: 0px 2px 4px 0px rgba(21, 21, 21, 0.20);
+    font-size: 17px;
+}
+@media(max-width: 384px){
+   .playersListElem{
+   	    font-size: 14px;
+   }
+}
+.playersListElem svg{
+	margin-right: 20px;
+}
+.playersListElem.yellow{
+	color: #2D79BE;
+}
+.playersListElem.yellow svg path{
+	fill: #2D79BE;
+	stroke: #2D79BE;
+}
+
+
+.addNewPlayerBtn{
+	padding: 12px 15px;
+    width: 300px;
+    max-width: 96%;
+}
+.addNewPlayerBtn svg{
+	margin-right: 25px;
+}
+
+.playersListElem.start{
+	width: 300px;
+    max-width: 96%;
+}
+
+.addPlayerForm{
+	display: flex;
+	flex-direction: column;
+}
+.gameWrapper.horizontal .addPlayerForm{
+	flex-direction: row;
+	justify-content: center;
+}
+@media(max-width: 550px){
+	.gameWrapper.horizontal .addPlayerForm{
+		padding: 0 20px;
+	}
+}
+
+.addPlayerForm > * {
+	display: block;
+	width: 300px;
+	max-width: 96%;
+	margin: 0 auto 20px;
+	font-size: 17px;
+}
+.gameWrapper.horizontal .addPlayerForm > *{
+	margin: 0;
+}
+.addPlayerForm input{
+	padding: 13px;
+    width: 270px;
+    max-width: calc(96% - 26px);
+    color: #2D79BE;
+    text-align: center;
+    font-family: Aqum;
+    border-radius: 9px;
+    background: #FFF;
+    box-shadow: 0px 2px 4px 0px rgba(21, 21, 21, 0.20);
+}
+.addPlayerForm input::placeholder{
+	color: #2d79be4a;
+}
+.gameWrapper.horizontal .addPlayerForm input{
+	margin-right: 30px;
+}
+.addPlayerFormBtn{
+	padding: 15px;
+}
+.gameWrapper.horizontal .addPlayerFormBtn{
+	width: 200px;
+}
+
+
+.garland{
+	width: 100%;
+	height: 111px;
+	margin-bottom: 30px;
+	background: url('/img/garland.png');
+}
+.gameWrapper.horizontal .garland{
+	margin-bottom: 0;
+}
+
+.resultPage{
+	position: relative;
+}
+
+.resultPageInnerWrap{
+	position: relative;
+	text-align: center;
+	z-index: 2;
+}
+.gameWrapper.horizontal .resultPageInnerWrap{
+	padding-left: 16px;
+	text-align: left;
+}
+
+.congratulations{
+	margin-bottom: 23px;
+	color: #2D79BE;
+	text-align: center;
+	font-size: 42px;
+	font-weight: 400;
+	line-height: 1; 
+}
+.gameWrapper.horizontal .congratulations{
+	padding-right: 20px;
+	text-align: right;
+}
+
+@media(max-width: 384px){
+   .congratulations{
+   	font-size: 36px;
+   }
+}
+@media(max-height: 384px){
+   .congratulations{
+   	margin-bottom: -10px;
+   }
+   .gameWrapper.horizontal .congratulations{
+		font-size: 25px;
+	}
+}
+
+.resultPage .monster{
+	position: absolute;
+	bottom: -3px;
+	width: 100%;
+    text-align: center;
+}
+.resultPage .monster img{
+	max-width: 100%;
+}
+.gameWrapper.horizontal .resultPage .monster{
+	bottom: -10px;
+    right: -8%;
+    width: 335px;
+}
+
+.winner{
+	display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 9px;
+    color: #fff;
+}
+@media(max-height: 384px){
+	.gameWrapper.horizontal .winner{
+		padding: 10px 15px;
+		font-size: 14px;
+	}
+}
+
+.winner svg{
+	margin-right: 20px;
+}
+
+.startNewGameBtn{
+	display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 17px;
+    font-size: 17px;
+}
+@media(max-height: 384px){
+   .startNewGameBtn{
+   		padding: 10px 15px;
+    	font-size: 14px;
+   }
+}
+
+.startNewGameBtn svg{
+	margin-right: 10px;
+}
+
+
+.gameProcessPageTopNav{
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	padding: 50px 25px 0;
+	z-index: 5;
+}
+@media(max-height: 580px){
+   .gameProcessPageTopNav{
+   	padding: 15px 25px 0;
+   }
+}
+
+.gameWrapper.horizontal .gameProcessPageTopNav{
+	justify-content: flex-start;
+	padding: 20px 20px 0;
+}
+.gameProcessPageTopNav button{
+	background: none;
+    outline: none;
+    border: none;
+}
+.gameWrapper.horizontal .gameProcessPageTopNav button:first-child{
+	margin-right: 20px;
+}
+
+.gameProcessPageSlogan{
+	margin: -26px auto 25px;
+    max-width: 220px;
+    text-align: center;
+    font-size: 42px;
+    line-height: 0.95;
+}
+.gameProcessPageSlogan::before{
+	left: 0;
+}
+@media(max-width: 384px){
+   .gameProcessPageSlogan{
+   		font-size: 30px;
+   }
+}
+
+.gameWrapper.horizontal .gameProcessPageSlogan{
+	margin: -35px 25px 0 auto;
+	text-align: right;
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .gameProcessPageSlogan{
+   		font-size: 36px;
+   }
+}
+.gameProcessPageLogo{
+	display: block;
+	width: 200px;
+	margin: -60px auto 0;
+}
+.gameWrapper.horizontal .gameProcessPageLogo{
+	margin: -50px 15px 0 auto;
+}
+
+
+.gameProcessControls{
+	position: relative;
+	text-align: center;
+	z-index: 3;
+}
+.gameWrapper.horizontal .gameProcessControls{
+	width: 65%;
+    margin: 60px 0 0 auto;
+}
+@media(max-height: 360px){
+   .gameWrapper.horizontal .gameProcessControls{
+	    margin: 10px 0 0 auto;
+	}
+}
+
+.gameWrapper.horizontal .gameProcessPage.loser .gameProcessControls{
+	margin: 20px 0 0 auto;
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .gameProcessPage.loser .gameProcessControls{
+		margin: 0 0 0 auto;
+	}
+}
+
+.gameProcessDescr{
+	margin: 10px 0 20px;
+	color: white;
+	font-size: 17px;
+}
+@media(max-width: 384px){
+   .gameProcessDescr{
+	   	margin: 0px 0 10px;
+	   	font-size: 14px;
+   }
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .gameProcessDescr{
+	   	margin: 0px 0 15px;
+	    font-size: 14px;
+   }
+}
+
+.currentUser{
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	padding: 15px 20px;
+	font-size: 17px;
+}
+@media(max-width: 384px){
+   .currentUser{
+   	margin-bottom: 15px;
+   }
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .currentUser{
+   	    margin-bottom: 15px;
+   		padding: 10px 15px;
+    	font-size: 14px;
+   }
+}
+
+.currentUser svg{
+	margin-right: 14px;
+}
+
+.gameProcessBtn{
+	padding: 19px 12px;
+	font-size: 17px;
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .gameProcessBtn{
+		padding: 10px 15px;
+		font-size: 14px;
+	}
+}
+
+.eatBtns button{
+	width: 100px;
+	margin-right: 10px;
+	padding: 19px 0;
+	text-align: center;
+}
+@media(max-height: 384px){
+   .gameWrapper.horizontal .eatBtns button{
+		padding: 10px 0;
+	}
+}
+.eatBtns button:last-child{
+	margin-right: 0;
+}
+
+.gameWrapper.horizontal .gameProcessPage .monsters{
+	width: 100vw;
+}
+.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	top: -10%;
+    left: 20%;
+    width: 120px;
+    transform: rotate(311deg);
+}
+@media(min-width: 670px){
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	    top: -12%;
+	    left: 18%;
+	    width: 130px;
+	}
+}
+@media(min-width: 800px){
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	    top: -8%;
+	    left: 22%;
+	    width: 120px;
+	}
+}
+@media(min-width: 890px){
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	    top: -7%;	    
+	    left: 20%;
+	    width: 134px;
+	    transform: rotate(314deg);
+	}
+}
+@media(min-width: 992px){
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	    top: -10%;
+	    left: 20%;
+	    width: 170px;
+	    transform: rotate(308deg);
+	}
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterRight{
+		width: 300px;
+	}
+}
+@media(min-width: 1200px){
+	.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterLeft{
+	    width: 200px;
+	    transform: rotate(304deg);
+	}
+
+}
+.gameWrapper.horizontal .gameProcessPage .monsters .monster.monsterRight{
+	top: 15%;
+    right: -55px;
+}
+.wheelWrapper{
+	position: absolute;
+	bottom: -65vw;
+}
+@media(max-height: 550px){
+   .wheelWrapper{
+   	bottom: -80vw
+   }
+}
+.gameWrapper.horizontal .wheelWrapper{
+	position: absolute;
+	width: 45%;
+    bottom: -45.5vw;
+}
+@media(min-width: 800px){
+   .gameWrapper.horizontal .wheelWrapper{
+		width: 38%;
+		bottom: -38vw;
+	}
+}
+@media(min-width: 890px){
+   .gameWrapper.horizontal .wheelWrapper{
+		width: 36%;
+		bottom: -36vw;
+	}
+}
+@media(min-width: 992px){
+   .gameWrapper.horizontal .wheelWrapper{
+		width: 45%;
+		bottom: -45vw;
+	}
+}
+@media(min-width: 1200px){
+   .gameWrapper.horizontal .wheelWrapper{
+		width: 50%;
+		bottom: -50vw;
+	}
+}
+
+
+.wheel{
+	position: relative;
+	z-index: 2;
+}
+
+.wheelArrow{
+	display: block;
+	margin: 0 auto;
+}
+.gameWrapper.horizontal .wheelArrow{
+	position: absolute;
+	top: 16%;
+    right: 8%;
+    transform: rotate(55deg);
+}
+.wheel img{
+	display: block;
+    margin: 0 auto;
+    width: 130%;
+    margin-left: -15%;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.05, 0.61);
+}
+.gameWrapper.horizontal .wheel img{
+	width: 200%;
+    margin-left: -100%;
+}
+
+
+.rotating1{
+	transform: rotate(396deg);
+	transition-duration: 0.6s;
+}
+.rotating2{
+	transform: rotate(432deg);
+	transition-duration: 0.7s;
+}
+.rotating3{
+	transform: rotate(468deg);
+	transition-duration: 0.8s;
+}
+.rotating4{
+	transform: rotate(504deg);
+	transition-duration: 0.9s;
+}
+.rotating5{
+	transform: rotate(540deg);
+	transition-duration: 1s;
+}
+.rotating6{
+	transform: rotate(576deg);
+	transition-duration: 1.1s;
+}
+.rotating7{
+	transform: rotate(612deg);
+	transition-duration: 1.2s;
+}
+.rotating8{
+	transform: rotate(648deg);
+	transition-duration: 1.3s;
+}
+.rotating9{
+	transform: rotate(684deg);
+	transition-duration: 1.4s;
+}
+.rotating10{
+	transform: rotate(720deg);
+	transition-duration: 1.5s;
+}
+.rotating11{
+	transform: rotate(756deg);
+	transition-duration: 1.6s;
+}
+.rotating12{
+	transform: rotate(792deg);
+	transition-duration: 1.7s;
+}
+.rotating13{
+	transform: rotate(828deg);
+	transition-duration: 1.8s;
+}
+.rotating14{
+	transform: rotate(864deg);
+	transition-duration: 1.9s;
+}
+.rotating15{
+	transform: rotate(900deg);
+	transition-duration: 2s;
+}
+.rotating16{
+	transform: rotate(936deg);
+	transition-duration: 2.1s;
+}
+.rotating17{
+	transform: rotate(612deg);
+	transition-duration: 2.2s;
+}
+.rotating18{
+	transform: rotate(972deg);
+	transition-duration: 2.3s;
+}
+.rotating19{
+	transform: rotate(1008deg);
+	transition-duration: 2.4s;
+}
+.rotating20{
+	transform: rotate(1044deg);
+	transition-duration: 2.5s;
+}
+
+
+
+
+.gameWrapper.horizonta .monsters{
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+}
+.monsters{
+	position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+}
+.monster{
+	position: absolute;
+}
+.monsters .monster.monsterLeft{
+	top: -25%;
+}
+.gameWrapper.horizontal .monsters .monster.monsterLeft{
+	top: -35px;
+    transform: rotate(82deg);
+    left: -3px;
+}
+
+.monsters .monster.monsterRight{
+	width: 190px;
+    top: -4%;
+    right: -18%;
+    transform: rotate(32deg);  
+}
+@media(min-width: 400px){
+	.monsters .monster.monsterRight{
+		width: 250px;
+	}
+}
+@media(min-width: 540px){
+	.monsters .monster.monsterRight{
+		width: 300px;
+		right: -14%;
+	}
+}
+@media(min-width: 700px){
+	.monsters .monster.monsterRight{
+		width: 350px;
+		right: -14%;
+	}
+}
+.gameWrapper.horizontal .monsters .monster.monsterRight{
+	width: 240px;
+    top: calc(50% - 75px);
+    right: -46px;
+    transform: rotate(-90deg);
+}
+
+
+.fireworks{
+	position: absolute;
+    height: 100vh;
+    top: 0;
+    width: 100vw;
+}
+[class*="firework-"]{
+	position: absolute;
+}
+
+.firework-1{
+	top: 30%;
+}
+.firework-2{
+	top: 10%;
+    right: 10%;
+}
+.firework-3{
+	top: 33%;
+    right: 10%;
+}
+.firework-4{
+	top: 65%;
+    left: 5%;
+}
+.firework-5{
+	top: 65%;
+    right: 2%;
+}
+.firework-6{
+	top: 10%;
+    left: 14%;
+}
+
+.firework-2 [class*="svg-firework-"],
+.firework-4 [class*="svg-firework-"],
+.firework-6 [class*="svg-firework-"]{
+	animation-name: animate-svg-fill-2;
+}
+
+.gameWrapper.horizontal .firework-3 {
+    top: 35%;
+    right: 50%;
+}
+.gameWrapper.horizontal .firework-4 {
+    top: 65%;
+    left: 35%;
+}
+.gameWrapper.horizontal .firework-5{
+	top: 65%;
+    right: 40%;
+}
+
+@-webkit-keyframes animate-svg-fill {
+  0% {
+    fill: transparent;
+  }
+  50% {
+    fill: rgb(255, 255, 255);
+  }
+  100% {
+    fill: transparent;
+  }
+}
+@keyframes animate-svg-fill{
+  0% {
+    fill: transparent;
+  }
+  50% {
+    fill: rgb(255, 255, 255);
+  }
+  100% {
+    fill: transparent;
+  }
+}
+@-webkit-keyframes animate-svg-fill-2 {
+  0% {
+    fill: transparent;
+  }
+  50% {
+    fill: #FBEA14;
+  }
+  100% {
+    fill: transparent;
+  }
+}
+@keyframes animate-svg-fill-2{
+  0% {
+    fill: transparent;
+  }
+  50% {
+    fill: #FBEA14;
+  }
+  100% {
+    fill: transparent;
+  }
+}
+
+.svg-firework-1 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 1.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 1.25s both infinite;
+}
+
+.svg-firework-2 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.035s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.035s both infinite;
+}
+
+.svg-firework-3 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.060000000000000005s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.060000000000000005s both infinite;
+}
+
+.svg-firework-4 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.085s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.085s both infinite;
+}
+
+.svg-firework-5 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.1125s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.1125s both infinite;
+}
+
+.svg-firework-6 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.135s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.135s both infinite;
+}
+
+.svg-firework-7 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.16000000000000003s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.16000000000000003s both infinite;
+}
+
+.svg-firework-8 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.18500000000000003s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.18500000000000003s both infinite;
+}
+
+.svg-firework-9 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.21000000000000002s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.21000000000000002s both infinite;
+}
+
+.svg-firework-10 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.23500000000000001.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.23500000000000001.25s both infinite;
+}
+
+.svg-firework-11 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.26s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.26s both infinite;
+}
+
+.svg-firework-12 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.28500000000000003s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.28500000000000003s both infinite;
+}
+
+.svg-firework-13 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.31000000000000005s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.31000000000000005s both infinite;
+}
+
+
+.svg-firework-14 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.335s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.335s both infinite;
+}
+
+.svg-firework-15 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.36000000000000004s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.36000000000000004s both infinite;
+}
+
+.svg-firework-16 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.385s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.385s both infinite;
+}
+
+.svg-firework-17 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.41000000000000003s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.41000000000000003s both infinite;
+}
+
+.svg-firework-18 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.43500000000000005s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.43500000000000005s both infinite;
+}
+
+.svg-firework-19 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.46s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.46s both infinite;
+}
+
+.svg-firework-20 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.48500000000000004s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.48500000000000004s both infinite;
+}
+
+.svg-firework-21 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.51.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.51.25s both infinite;
+}
+
+.svg-firework-22 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.535s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.535s both infinite;
+}
+
+.svg-firework-23 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.56s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.56s both infinite;
+}
+.svg-firework-24 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.5850000000000001.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.5850000000000001.25s both infinite;
+}
+
+.svg-firework-25 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.6100000000000001.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.6100000000000001.25s both infinite;
+}
+.svg-firework-26 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.635s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.635s both infinite;
+}
+.svg-firework-27 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.66s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.66s both infinite;
+}
+.svg-firework-28 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.685s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.685s both infinite;
+}
+.svg-firework-29 {
+  -webkit-animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.7100000000000001.25s both infinite;
+          animation: animate-svg-fill 1.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.7100000000000001.25s both infinite;
+}

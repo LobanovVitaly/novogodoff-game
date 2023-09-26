@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'Rogalik Symbols';
+    src: url('Rogalik-Symbols.eot');
+    src: local('Rogalik Symbols'), local('Rogalik-Symbols'),
+        url('Rogalik-Symbols.eot?#iefix') format('embedded-opentype'),
+        url('Rogalik-Symbols.woff2') format('woff2'),
+        url('Rogalik-Symbols.woff') format('woff'),
+        url('Rogalik-Symbols.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Rogalik';
+    src: url('Rogalik-Regular.eot');
+    src: local('Rogalik Regular'), local('Rogalik-Regular'),
+        url('Rogalik-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Rogalik-Regular.woff2') format('woff2'),
+        url('Rogalik-Regular.woff') format('woff'),
+        url('Rogalik-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
