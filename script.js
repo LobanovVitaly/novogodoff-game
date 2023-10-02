@@ -4,6 +4,7 @@ const RESULTS = 'RESULTS';
 const PLAYERS = 'PLAYERS';
 const ADD_PLAYER = 'ADD_PLAYER';
 const GAME_PROCESS = 'GAME_PROCESS';
+const CHOOSE_FRIEND = 'CHOOSE_FRIEND';
 
 class Game extends React.Component{
   constructor(props){
@@ -11,18 +12,28 @@ class Game extends React.Component{
 
     this.state = {
       currentView: START,
+      playersColors: ['yellow', 'red', 'blue', 'green', 'purple'],
+      currentPlayersColor: 0,
       players: [
           // { 
           //     name: 'Александр',
-          //     currentPlayer: false
-          // }
+          //     color: 'red',
+          //     currentPlayer: true,
+          //     deleted: false
+          // },
         ],
       newPlayerNameText: '',
       wheelIsRotating: false,
       wheelStoped: false,
       currentRotate: null,
       wasEaten: null,
+      eatTwoSweets: false,
+      skipNextMove: false,
+      closedEyes: false,
+      redSector: false,
       winner: null,
+      treatFriend: false,
+      chosenFriend: null, // для "Угостить друга"
       loser: null,
       screenOrientation: (screen.availHeight > screen.availWidth) ? 'vertical' : 'horizontal'
     }
@@ -83,9 +94,12 @@ class Game extends React.Component{
           {
             name: this.state.newPlayerNameText,
             currentPlayer: !this.state.players.length? true : false,
+            color: this.state.playersColors[this.state.currentPlayersColor],
             deleted: false
           }
         ],
+        currentPlayersColor: (this.state.currentPlayersColor == this.state.playersColors.length -1)? 
+                                0 : this.state.currentPlayersColor+ 1,
         newPlayerNameText: '',
         currentView: PLAYERS
      });
@@ -95,9 +109,45 @@ class Game extends React.Component{
     this.setState({newPlayerNameText: value});
   }
 
-  rotateWheel = (value) => {
+  treatFriendHandler = () =>{ // клик по кнопке "Угостить друга"
     this.setState({
-      currentRotate: value,
+      currentView: CHOOSE_FRIEND
+    });
+  }
+
+  chooseFriendHandler = (playerIndex) => {
+    // по клику берется index игрока и записывается в стейт
+    // меняется экран - GameProcess с выбранным игроком - кнопки съел, не съел
+
+    this.setState({
+      chosenFriend: playerIndex,
+      currentView: GAME_PROCESS
+    });
+  }
+
+  rotateWheelTime = (rotate) => {
+    // время поворота колеса в зависимости от угла поворота
+    // если придумать формулу, можно избавиться от этого
+    let time;
+
+    switch(rotate){
+       case 1:time=600;break;case 2:time=700;break;case 3:time=800;break;
+       case 4:time=900;break;case 5:time=1e3;break;case 6:time=1100;break;
+       case 7:time=1200;break;case 8:time=1300;break;case 9:time=1400;break;
+       case 10:time=1500;break;case 11:time=1600;break;case 12:time=1700;break;
+       case 13:time=1800;break;case 14:time=1900;break;case 15:time=2e3;break;
+       case 16:time=2100;break;case 17:time=2200;break;case 18:time=2300;break;
+       case 19:time=2400;break;case 20:time=2500;break;case 21:time=2600;break;
+       case 22:time=2700;break;case 23:time=2800;break;case 24:time=2900;break;
+       case 25:time=3e3;break;case 26:time=3100;break;case 27:time=3200;break;
+       case 28:time=3300;break;case 29:time=3400;break;case 30:time=3500;break;
+    }
+    return time;
+  }
+
+  rotateWheel = (rotate) => {
+    this.setState({
+      currentRotate: rotate,
       wheelIsRotating: true
     });
 
@@ -106,10 +156,55 @@ class Game extends React.Component{
           wheelIsRotating: false,
           wheelStoped: true
         });
-      }, 1500);
+      }, this.rotateWheelTime(rotate));
   }
 
-  eatHandler = (wasEaten) => {
+  rotateWheelRedSector = (rotate, redSector) => {
+    // 1 - Съешь 2 конфеты
+    // 2 - Пропусти следующий ход
+    // 3 - Возьми конфету с закрытыми глазами
+    // 4 - Угости любой конфетой друга
+    this.setState({
+      currentRotate: rotate,
+      wheelIsRotating: true,
+      redSector: true
+    });
+
+    setTimeout(()=>{
+      switch(redSector){
+        case 1:
+          this.setState({
+              wheelIsRotating: false,
+              wheelStoped: true,
+              eatTwoSweets: true
+            });
+          break;
+        case 2:
+          this.setState({
+              wheelIsRotating: false,
+              wheelStoped: true,
+              skipNextMove: true
+            });
+          break;
+        case 3:
+          this.setState({
+              wheelIsRotating: false,
+              wheelStoped: true,
+              closedEyes: true
+            });
+          break;
+        case 4:  
+          this.setState({
+              wheelIsRotating: false,
+              wheelStoped: true,
+              treatFriend: true
+            });
+          break;
+      }
+    }, this.rotateWheelTime(rotate));
+  }
+
+  getCurrentAndNextPlayersIndex = () => {
     let nextPlayerIndex,
         currentPlayerIndex = this.state.players.findIndex(p => {
               return p.currentPlayer
@@ -122,8 +217,49 @@ class Game extends React.Component{
       nextPlayerIndex = currentPlayerIndex + 1;
     }
 
+    return [currentPlayerIndex, nextPlayerIndex];
+  }
+
+  eatHandler = (wasEaten) => { 
+    let [currentPlayerIndex, nextPlayerIndex] = this.getCurrentAndNextPlayersIndex();
+    let realCurrentPlayerIndex;
+
+    if(this.state.chosenFriend !== null){
+      // сохранить индекс настоящего текущего игрока (в realCurrentPlayerIndex)
+      // и сделать chosenFriend текущим (currentPlayerIndex), 
+      //чтобы проверить - съел/не съел игрок, которого угостили
+      realCurrentPlayerIndex = currentPlayerIndex;
+      currentPlayerIndex = this.state.chosenFriend;
+    }
+
+
+    // если chosenFriend не съел и выбывает, 
+    // то следующим будеи игрок "через одного"
+    if(!wasEaten && this.state.chosenFriend !== null && nextPlayerIndex == this.state.chosenFriend){
+      //nextPlayerIndex += 1;
+
+      if(!wasEaten && nextPlayerIndex == this.state.players.length-1){
+      //если предпоследний игрок угощает последнего и он (последний) не съел,
+      // то следующим будет нулевой игрок 
+        nextPlayerIndex = 0;
+      }
+      else{
+        nextPlayerIndex += 1;
+      }
+    }
+
+
+    let winner;
+    
     if(!wasEaten && this.state.players.length === 2){
-      let winner = this.state.players[nextPlayerIndex].name; 
+      if(this.state.chosenFriend !== null){
+        console.log(realCurrentPlayerIndex)
+        // если выбранный друг не съел, то выигрывает тот, который "угощал"
+        winner = this.state.players[realCurrentPlayerIndex].name; 
+      }
+      else{
+        winner = this.state.players[nextPlayerIndex].name; 
+      }
 
       this.setState({
         currentView: RESULTS,
@@ -135,19 +271,39 @@ class Game extends React.Component{
       let loser = null;
 
       if(!wasEaten){
-        loser = this.state.players.find((p) => {
-          return p.currentPlayer
-        });
+        // выбывает либо выбранный друг, либо текущий игрок 
+        if(this.state.chosenFriend !== null){
+          loser = this.state.players.find((p, i) => {
+            return i === this.state.chosenFriend
+          });
+        }
+        else{
+          loser = this.state.players.find((p) => {
+            return p.currentPlayer
+          });
+        }
       } 
 
+      let localCurrentIndex = this.state.chosenFriend !== null ? realCurrentPlayerIndex : currentPlayerIndex;
+
       let players = this.state.players.map((p, i) => {
-          if(i == currentPlayerIndex){
+          if(this.state.chosenFriend !== null){
+            // удалить выбранного игрока, если он не съел
+            if(!wasEaten && i == this.state.chosenFriend){
+              return {
+                ...p,
+                deleted: true
+              };
+            }
+          }
+          if(i == localCurrentIndex){ // удаляем текущего игрока, если он не съел
             return {
               ...p,
               currentPlayer: false,
-              deleted: !wasEaten? true : false
+              deleted: (!wasEaten && this.state.chosenFriend === null) ? true : false
             }
           }
+
           if(i == nextPlayerIndex){
             return {
               ...p,
@@ -176,14 +332,54 @@ class Game extends React.Component{
           currentRotate: null,
           wasEaten: null,
           players: [...players],
-          loser: loser
+          loser: loser,
+          eatTwoSweets: false,
+          skipNextMove: false,
+          closedEyes: false,
+          redSector: false,
+          treatFriend: false,
+          chosenFriend: null
       });
     }
   }
 
+  skipNextMoveHandler = () => {
+    let [currentPlayerIndex, nextPlayerIndex] = this.getCurrentAndNextPlayersIndex();
+
+    let players = this.state.players.map((p, i) => {
+          if(i == currentPlayerIndex){
+            return {
+              ...p,
+              currentPlayer: false
+            }
+          }
+          if(i == nextPlayerIndex){
+            return {
+              ...p,
+              currentPlayer: true
+            }  
+          }
+          return p;
+        });
+
+    this.setState({
+        wheelIsRotating: false,
+        wheelStoped: false,
+        currentRotate: null,
+        wasEaten: null,
+        players: [...players],
+        loser: null,
+        eatTwoSweets: false,
+        skipNextMove: false,
+        closedEyes: false,
+        redSector: false,
+    });
+  }
+
   nextPlayerHandler = () => {
     this.setState({
-      loser: null
+      loser: null,
+      chosenFriend: null
     });
   }
 
@@ -213,7 +409,7 @@ class Game extends React.Component{
         case PLAYERS:
           return (
               <div className={`gameWrapper bgBlue ${this.state.screenOrientation}`}>
-               <PlayersPage 
+                <PlayersPage 
                           screenOrientation={this.state.screenOrientation}
                           players={this.state.players}
                           changeCurrentView={this.changeCurrentView}
@@ -224,12 +420,24 @@ class Game extends React.Component{
         case ADD_PLAYER:
           return (
               <div className={`gameWrapper bgBlue ${this.state.screenOrientation}`}>
-               <AddPlayerPage 
+                <AddPlayerPage 
                           screenOrientation={this.state.screenOrientation}
                           changeCurrentView={this.changeCurrentView}
                           addPlayer={this.addPlayer}
                           changeNewPlayerNameText={this.changeNewPlayerNameText}
                           newPlayerNameText={this.state.newPlayerNameText} />
+              </div>
+            );
+        case CHOOSE_FRIEND: 
+          return(
+              <div className={`gameWrapper bgBlue ${this.state.screenOrientation}`}>
+                <ChooseFriend 
+                      screenOrientation={this.state.screenOrientation}
+                      changeCurrentView={this.changeCurrentView}
+                      players={this.state.players}
+                      chooseFriendHandler={this.chooseFriendHandler}
+                      changeCurrentView={this.changeCurrentView}
+                  />
               </div>
             );
         case GAME_PROCESS:
@@ -241,11 +449,20 @@ class Game extends React.Component{
                           players={this.state.players}
                           wheelIsRotating={this.state.wheelIsRotating}
                           wheelStoped={this.state.wheelStoped}
+                          eatTwoSweets={this.state.eatTwoSweets}
+                          skipNextMove={this.state.skipNextMove}
+                          skipNextMoveHandler={this.skipNextMoveHandler}
                           currentRotate={this.state.currentRotate}
                           rotateWheel={this.rotateWheel}
+                          rotateWheelRedSector={this.rotateWheelRedSector}
                           eatHandler={this.eatHandler}
                           nextPlayerHandler={this.nextPlayerHandler}
+                          redSector={this.state.redSector}
                           loser={this.state.loser}
+                          closedEyes={this.state.closedEyes}
+                          treatFriend={this.state.treatFriend}
+                          treatFriendHandler={this.treatFriendHandler}
+                          chosenFriend={this.state.chosenFriend}
                           />
             </div>
           );
@@ -278,10 +495,18 @@ const StartPage = (props) => {
     let verticalOrientation = props.screenOrientation === 'vertical';
     return (
       <div className="startPage">
+        <div id="preloadImg">
+          <img src="https://game-files.novogodoff.ru/img/bg-blue.png" />
+          <img src="https://game-files.novogodoff.ru/img/bg-gray.png" />
+        </div>
         {!verticalOrientation &&
           <div className="monsters">
-            <img src="img/monster-left.png" className="monster monsterLeft" />
-            <img src="img/monster.png" className="monster monsterRight" />
+            <div className={'monsterLeftWrap'}>
+              <img src="img/monster.png" className={`monster monsterLeft`} />
+            </div>
+            <div className={'monsterRightWrap'}>
+              <img src="img/monster.png" className={`monster monsterRight`} />
+            </div> 
           </div>
         }
         <div className="logo">
@@ -293,30 +518,20 @@ const StartPage = (props) => {
         </div>
         <div className="wheelWrapper">
           <div className="wheel">
-            <svg className="wheelArrow" xmlns="http://www.w3.org/2000/svg" width="37" height="33" viewBox="0 0 37 33" fill="none">
-              <g filter="url(#filter0_d_332_14851)">
-                <path d="M20.232 27.9948C19.4621 29.3279 17.5379 29.3279 16.768 27.9948L5.07698 7.74875C4.30705 6.41541 5.26929 4.74862 6.80895 4.74862L30.1911 4.74862C31.7307 4.74862 32.693 6.41542 31.923 7.74875L20.232 27.9948Z" fill="#FBD700"/>
-              </g>
-              <defs>
-                <filter id="filter0_d_332_14851" x="0.805969" y="0.748535" width="35.3881" height="32.2461" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                  <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                  <feOffset/>
-                  <feGaussianBlur stdDeviation="2"/>
-                  <feComposite in2="hardAlpha" operator="out"/>
-                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.16 0"/>
-                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_332_14851"/>
-                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_332_14851" result="shape"/>
-                </filter>
-              </defs>
+            <svg className="wheelArrow" xmlns="http://www.w3.org/2000/svg" width="27" height="24" viewBox="0 0 27 24" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M0 1.913C0 2.966 2.609 8.253 5.798 13.663C9.977 20.752 12.14 23.5 13.541 23.5C14.953 23.5 17.061 20.764 21.243 13.506C24.409 8.009 27 2.722 27 1.756C27 0.168 25.708 0 13.5 0C0.871 0 0 0.123 0 1.913Z" fill="#FBD700"></path>
             </svg>
             <img className={`rotating${props.currentRotate}`} src={`img/wheel${!verticalOrientation? '-2' : ''}.png`} />
           </div>
           {verticalOrientation &&
             <div className="monsters">
-              <img src="img/monster-left.png" className="monster monsterLeft" />
-              <img src="img/monster.png"  className="monster monsterRight" />
+            <div className={'monsterLeftWrap'}>
+              <img src="img/monster.png" className={`monster monsterLeft`} />
             </div>
+            <div className={'monsterRightWrap'}>
+              <img src="img/monster.png" className={`monster monsterRight`} />
+            </div> 
+          </div>
           }
         </div>
       </div>
@@ -359,11 +574,10 @@ const RulesPage = (props) => {
 };
 
 const PlayersPage = (props) => {
-  let colors = ['yellow', 'red', 'blue', 'green', 'purple', 'yellow', 'red', 'blue', 'green', 'purple', 'yellow', 'red', 'blue', 'green', 'purple', 'yellow', 'red', 'blue', 'green', 'purple'];
- 
+  
   let players = props.players.map((p, i) => {
     return (
-      <div className={`player ${colors[i]} playersListElem`} key={i}>
+      <div className={`player ${p.color} playersListElem`} key={i}>
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
           <path d="M18.2479 13.7521C17.2447 12.749 16.0693 11.9795 14.7883 11.4707C16.1549 10.3646 17.0312 8.67371 17.0312 6.78125C17.0312 3.45541 14.3258 0.75 11 0.75C7.67416 0.75 4.96875 3.45541 4.96875 6.78125C4.96875 8.67372 5.84507 10.3646 7.21171 11.4707C5.9307 11.9795 4.75535 12.749 3.75217 13.7521L3.92895 13.9289L3.75217 13.7521C1.81654 15.6878 0.75 18.2626 0.75 21V21.25H1H2.5625H2.8125V21C2.8125 16.4856 6.48561 12.8125 11 12.8125C15.5144 12.8125 19.1875 16.4856 19.1875 21V21.25H19.4375H21H21.25V21C21.25 18.2626 20.1835 15.6878 18.2479 13.7521L18.0837 13.9163L18.2479 13.7521ZM11 10.75C8.81186 10.75 7.03125 8.96943 7.03125 6.78125C7.03125 4.59307 8.81186 2.8125 11 2.8125C13.1881 2.8125 14.9688 4.59307 14.9688 6.78125C14.9688 8.96943 13.1881 10.75 11 10.75Z" fill="#fff" stroke="#fff" stroke-width="0.5"/>
         </svg>
@@ -449,16 +663,87 @@ const AddPlayerPage = (props) => {
   );
 }
 
+const ChooseFriend = (props) => {
+  let friends = props.players.map((p, i)=>{
+    if(p.currentPlayer) return;
+
+    return (
+      <button className={`btn player ${p.color} playersListElem`} key={i} onClick={()=>{props.chooseFriendHandler(i)}}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M18.2479 13.7521C17.2447 12.749 16.0693 11.9795 14.7883 11.4707C16.1549 10.3646 17.0312 8.67371 17.0312 6.78125C17.0312 3.45541 14.3258 0.75 11 0.75C7.67416 0.75 4.96875 3.45541 4.96875 6.78125C4.96875 8.67372 5.84507 10.3646 7.21171 11.4707C5.9307 11.9795 4.75535 12.749 3.75217 13.7521L3.92895 13.9289L3.75217 13.7521C1.81654 15.6878 0.75 18.2626 0.75 21V21.25H1H2.5625H2.8125V21C2.8125 16.4856 6.48561 12.8125 11 12.8125C15.5144 12.8125 19.1875 16.4856 19.1875 21V21.25H19.4375H21H21.25V21C21.25 18.2626 20.1835 15.6878 18.2479 13.7521L18.0837 13.9163L18.2479 13.7521ZM11 10.75C8.81186 10.75 7.03125 8.96943 7.03125 6.78125C7.03125 4.59307 8.81186 2.8125 11 2.8125C13.1881 2.8125 14.9688 4.59307 14.9688 6.78125C14.9688 8.96943 13.1881 10.75 11 10.75Z" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+        </svg>
+        {p.name}
+      </button>
+    );
+  })
+
+  return (
+    <div className={`gameProcessPage`}>
+      <div className="gameProcessPageTopNav">
+        <button onClick={()=> {props.changeCurrentView(START)}}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
+            <path d="M30.5455 13.694L30.5456 13.694L18.3068 1.45581C18.3068 1.45577 18.3068 1.45574 18.3067 1.4557C17.6912 0.839905 16.8705 0.5 16.0002 0.5C15.1298 0.5 14.309 0.839936 13.6934 1.45564C13.6934 1.45565 13.6934 1.45566 13.6934 1.45567L1.46089 13.6878L1.46022 13.6885C1.45749 13.6912 1.45084 13.6978 1.44319 13.7058C0.182047 14.9789 0.185628 17.0396 1.45385 18.3078C2.03061 18.8848 2.79258 19.2205 3.60599 19.2587C3.64177 19.2618 3.6774 19.2635 3.71292 19.2638V27.7704C3.71292 29.8291 5.38717 31.503 7.44575 31.503H12.234C12.9957 31.503 13.613 30.8853 13.613 30.124V23.0628C13.613 22.5257 14.0508 22.0879 14.588 22.0879H17.4123C17.9495 22.0879 18.3871 22.5256 18.3871 23.0628V30.124C18.3871 30.8854 19.0044 31.503 19.7661 31.503H24.5543C26.6132 31.503 28.2872 29.8291 28.2872 27.7704V19.2636C29.1397 19.2514 29.9417 18.9126 30.5463 18.308L30.5463 18.308C31.8173 17.0365 31.8178 14.9689 30.5482 13.6966L30.5482 13.6967C30.5481 13.6966 30.548 13.6964 30.5479 13.6963L30.5479 13.6963L30.5479 13.6962L30.5478 13.6963C30.5471 13.6955 30.5463 13.6948 30.5456 13.694L30.5455 13.694ZM30.5455 13.694C30.5319 13.6806 30.5087 13.6591 30.4775 13.6377L30.2045 14.0351L30.1955 14.0483L30.5478 13.6963C30.5471 13.6956 30.5463 13.6948 30.5455 13.694ZM30.5482 13.6967L30.5448 13.7L30.5479 13.6964C30.548 13.6965 30.5481 13.6966 30.5482 13.6967ZM28.5959 16.3581L28.5949 16.3591C28.5485 16.4058 28.4933 16.4428 28.4325 16.468C28.3717 16.4932 28.3065 16.5061 28.2406 16.506H28.2395H26.9081C26.1465 16.506 25.5291 17.1232 25.5291 17.885V27.7704C25.5291 28.3073 25.0915 28.745 24.5543 28.745H21.1451V23.0628C21.1451 21.0042 19.4711 19.3299 17.4122 19.3299H14.5881C12.5293 19.3299 10.855 21.0041 10.855 23.0628V28.745H7.44586C6.90877 28.745 6.47097 28.3072 6.47097 27.7704V17.8849C6.47097 17.1232 5.85359 16.5059 5.09197 16.5059H3.7991C3.78354 16.505 3.76796 16.5045 3.75236 16.5041L3.75103 16.5041C3.61785 16.5018 3.4963 16.4498 3.40466 16.358L3.40438 16.3577C3.20937 16.1627 3.20811 15.8447 3.40118 15.648C3.40456 15.6446 3.40782 15.6413 3.41095 15.6381L15.6439 3.40572L15.645 3.40454C15.6913 3.35792 15.7465 3.32096 15.8072 3.2958C15.8679 3.27064 15.933 3.25779 15.9987 3.25799H16.0002C16.1356 3.25799 16.2604 3.30964 16.3564 3.40566L16.3565 3.40572L28.5921 15.6411L28.592 15.6412L28.5994 15.6483L28.6001 15.6489C28.7922 15.8462 28.7903 16.1637 28.5959 16.3581ZM3.48303 15.5427C3.48996 15.5308 3.48477 15.5417 3.47091 15.5625C3.47717 15.5528 3.4814 15.5455 3.48303 15.5427ZM28.624 16.9299C28.5021 16.9804 28.3714 17.0063 28.2395 17.006L28.624 16.9299Z" fill="white" stroke="white"/>
+          </svg>
+        </button>
+        <button onClick={()=> {props.changeCurrentView(RULES)}}>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24.9449 24.9437L24.9437 24.9449C23.7703 26.1248 22.3756 27.0616 20.8396 27.7016C19.3035 28.3416 17.6562 28.6722 15.9922 28.6746C14.3281 28.6769 12.6799 28.3508 11.1421 27.715C9.60426 27.0793 8.20698 26.1464 7.03031 24.9697C5.85364 23.793 4.9207 22.3957 4.28495 20.8579C3.64921 19.3201 3.32315 17.6719 3.32545 16.0078C3.32775 14.3438 3.65837 12.6965 4.29838 11.1604C4.93838 9.62438 5.87517 8.22968 7.0551 7.05627L7.05627 7.0551C8.22968 5.87517 9.62438 4.93838 11.1604 4.29838C12.6965 3.65837 14.3438 3.32775 16.0078 3.32545C17.6719 3.32315 19.3201 3.64921 20.8579 4.28495C22.3957 4.9207 23.793 5.85364 24.9697 7.03031C26.1464 8.20698 27.0793 9.60426 27.715 11.1421C28.3508 12.6799 28.6769 14.3281 28.6746 15.9922C28.6722 17.6562 28.3416 19.3035 27.7016 20.8396C27.0616 22.3756 26.1248 23.7703 24.9449 24.9437ZM16 0.7C7.55033 0.7 0.7 7.55033 0.7 16C0.7 24.4497 7.55033 31.3 16 31.3C24.4497 31.3 31.3 24.4497 31.3 16C31.3 7.55033 24.4497 0.7 16 0.7Z" fill="white" stroke="white" stroke-width="0.6"/>
+            <path d="M13.9264 21.1087L12.1294 22.8897L12.1293 22.8897C11.9941 23.0238 11.8867 23.1832 11.8133 23.3588C11.7399 23.5344 11.7019 23.7229 11.7014 23.9132C11.701 24.1036 11.7381 24.2922 11.8108 24.4681C11.8834 24.6441 11.99 24.804 12.1246 24.9387L12.1252 24.9393C12.3962 25.2088 12.7628 25.3601 13.145 25.3601C13.5269 25.3601 13.8934 25.209 14.1643 24.9397L13.9264 21.1087ZM13.9264 21.1087L12.1331 19.3255C12.133 19.3254 12.133 19.3253 12.1329 19.3253C11.9978 19.1913 11.8905 19.0321 11.8171 18.8566C11.7437 18.681 11.7057 18.4926 11.7052 18.3023C11.7048 18.112 11.742 17.9235 11.8146 17.7476C11.8872 17.5716 11.9938 17.4118 12.1283 17.2772C12.3986 17.0068 12.765 16.8545 13.1472 16.8536C13.5295 16.8527 13.8966 17.0033 14.1681 17.2724C14.1681 17.2724 14.1681 17.2724 14.1681 17.2725L15.9764 19.064L17.7574 17.2796L17.7577 17.2793C18.0287 17.0084 18.3962 16.8562 18.7794 16.8562C19.1626 16.8562 19.53 17.0084 19.801 17.2792C19.9354 17.4133 20.0421 17.5726 20.1148 17.748C20.1876 17.9233 20.225 18.1113 20.225 18.3012C20.225 18.4911 20.1876 18.6791 20.1148 18.8545C20.0421 19.0297 19.9356 19.1889 19.8013 19.323L13.9264 21.1087ZM14.1647 24.9393L15.9726 23.1482L17.7574 24.9363C17.7574 24.9363 17.7574 24.9363 17.7574 24.9363C17.8915 25.0707 18.0508 25.1773 18.2262 25.2501C18.4016 25.3228 18.5896 25.3603 18.7794 25.3603C18.9693 25.3603 19.1573 25.3228 19.3327 25.2501C19.508 25.1774 19.6672 25.0708 19.8013 24.9365C19.9356 24.8024 20.0421 24.6432 20.1148 24.4679C20.1876 24.2926 20.225 24.1046 20.225 23.9147C20.225 23.7248 20.1876 23.5368 20.1148 23.3614C20.0421 23.1862 19.9356 23.027 19.8014 22.893C19.8013 22.8929 19.8012 22.8928 19.801 22.8926L18.0187 21.1063L19.801 19.3233L14.1647 24.9393ZM12.1225 10.2398L12.1221 10.2401C11.8518 10.5111 11.7 10.8782 11.7 11.261C11.7 11.6437 11.8518 12.0108 12.1221 12.2818L12.1224 12.282L14.7969 14.9565C14.7969 14.9566 14.797 14.9566 14.797 14.9566C14.8919 15.0517 15.0045 15.1271 15.1286 15.1786C15.2527 15.23 15.3857 15.2565 15.52 15.2565C15.6544 15.2565 15.7874 15.23 15.9115 15.1786C16.0356 15.1271 16.1483 15.0516 16.2432 14.9565L16.2435 14.9563L20.9988 10.1792C20.9988 10.1792 20.9988 10.1791 20.9989 10.1791C21.2669 9.91002 21.4182 9.54617 21.42 9.16634C21.4218 8.78731 21.2745 8.42281 21.01 8.1514L20.998 8.13876L20.998 8.13874L20.9949 8.13547C20.8612 7.99867 20.7018 7.88974 20.5258 7.81499C20.3498 7.74025 20.1607 7.70117 19.9695 7.70003C19.7783 7.69888 19.5887 7.73569 19.4118 7.80833C19.235 7.88096 19.0742 7.98797 18.939 8.12317L18.939 8.1232L17.1107 9.95148L15.4945 11.5676L14.1668 10.2399L14.1667 10.2398C13.8955 9.96886 13.5279 9.81667 13.1446 9.81667C12.7613 9.81667 12.3936 9.96886 12.1225 10.2398Z" fill="white" stroke="white" stroke-width="0.6"/>
+          </svg>
+        </button>
+      </div>
+      <div className="scrollableContent">
+        <div className="playersPageTitle">Выберите друга, которого<br/> хотите угостить</div>
+
+        <div className="playersList">
+          {friends}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const GameProcessPage = (props) => {
-  //debugger
-  let currentPlayer = props.players.find(p => {
+  //debugger;
+  let currentPlayer;
+
+  if(props.chosenFriend !== null){
+    currentPlayer = props.players[props.chosenFriend];
+  }
+  else{
+    currentPlayer = props.players.find(p => {
             return p.currentPlayer
         });
+  }
+
   let verticalOrientation = props.screenOrientation === 'vertical';
+  
   const rotating = () => {
-    let randomNumber = Math.floor(Math.random() * (20 - 1) + 1);
+    let randomNumber = Math.floor(Math.random() * (30 - 1) + 1);
+    let redSectorRandomNumber;
+    
+    
     if(props.currentRotate !== randomNumber){
-      props.rotateWheel(randomNumber);
+      if((verticalOrientation && (randomNumber == 3 || randomNumber == 13 || randomNumber == 23)) 
+        || (!verticalOrientation && (randomNumber == 4 || randomNumber == 14 || randomNumber == 24))){
+        // 1 - Съешь 2 конфеты
+        // 2 - Пропусти следующий ход
+        redSectorRandomNumber = Math.round(Math.random( )) + 1 ;
+        //redSectorRandomNumber = 1;
+        props.rotateWheelRedSector(randomNumber, redSectorRandomNumber);
+      }
+      else if((verticalOrientation && (randomNumber == 8 || randomNumber == 18 || randomNumber == 28)) 
+        || (!verticalOrientation && (randomNumber == 9 || randomNumber == 19 || randomNumber == 29))){
+          // 3 - Возьми конфету с закрытыми глазами
+          // 4 - Угости любой конфетой друга
+          
+          redSectorRandomNumber = Math.round(Math.random() + 3);
+          //redSectorRandomNumber = 3;
+          props.rotateWheelRedSector(randomNumber, redSectorRandomNumber);
+      }   
+      else{
+        props.rotateWheel(randomNumber);
+      }
     }
     else{
       rotating();
@@ -500,20 +785,19 @@ const GameProcessPage = (props) => {
       }
 
 
-
        {/* обычное состояние */} 
       {!props.loser &&
         <div className="gameProcessControls">
           <div>
-            <div className="btn yellow currentUser">
+            <div className={`btn ${currentPlayer.color} currentUser`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                <path d="M0.75 21V21.25H1H2.5625H2.8125V21C2.8125 16.4856 6.48561 12.8125 11 12.8125C15.5144 12.8125 19.1875 16.4856 19.1875 21V21.25H19.4375H21H21.25V21C21.25 18.2626 20.1835 15.6878 18.2479 13.7521L18.0711 13.9289L18.2479 13.7521C17.2447 12.749 16.0693 11.9795 14.7883 11.4707C16.1549 10.3646 17.0312 8.67371 17.0312 6.78125C17.0312 3.45541 14.3258 0.75 11 0.75C7.67416 0.75 4.96875 3.45541 4.96875 6.78125C4.96875 8.67372 5.84507 10.3646 7.21171 11.4707C5.9307 11.9795 4.75535 12.749 3.75217 13.7521L3.92895 13.9289L3.75217 13.7521C1.81654 15.6878 0.75 18.2626 0.75 21ZM11 10.75C8.81186 10.75 7.03125 8.96943 7.03125 6.78125C7.03125 4.59307 8.81186 2.8125 11 2.8125C13.1881 2.8125 14.9688 4.59307 14.9688 6.78125C14.9688 8.96943 13.1881 10.75 11 10.75Z" fill="#2D79BE" stroke="#2D79BE" stroke-width="0.5"/>
+                <path d="M0.75 21V21.25H1H2.5625H2.8125V21C2.8125 16.4856 6.48561 12.8125 11 12.8125C15.5144 12.8125 19.1875 16.4856 19.1875 21V21.25H19.4375H21H21.25V21C21.25 18.2626 20.1835 15.6878 18.2479 13.7521L18.0711 13.9289L18.2479 13.7521C17.2447 12.749 16.0693 11.9795 14.7883 11.4707C16.1549 10.3646 17.0312 8.67371 17.0312 6.78125C17.0312 3.45541 14.3258 0.75 11 0.75C7.67416 0.75 4.96875 3.45541 4.96875 6.78125C4.96875 8.67372 5.84507 10.3646 7.21171 11.4707C5.9307 11.9795 4.75535 12.749 3.75217 13.7521L3.92895 13.9289L3.75217 13.7521C1.81654 15.6878 0.75 18.2626 0.75 21ZM11 10.75C8.81186 10.75 7.03125 8.96943 7.03125 6.78125C7.03125 4.59307 8.81186 2.8125 11 2.8125C13.1881 2.8125 14.9688 4.59307 14.9688 6.78125C14.9688 8.96943 13.1881 10.75 11 10.75Z" fill="#FFF" stroke="#FFF" stroke-width="0.5"/>
               </svg>
               {currentPlayer.name}
             </div>
           </div>
           <div>
-            {!props.wheelIsRotating && !props.wheelStoped &&
+            {!props.wheelIsRotating && !props.wheelStoped && 
             <button 
                 className="btn green gameProcessBtn rotateWheelBtn"
                 onClick={rotating}  
@@ -521,14 +805,45 @@ const GameProcessPage = (props) => {
               Вращать колесо
             </button>
             }
-            {props.wheelIsRotating &&
-              <p className="gameProcessDescr">Возьми конфету<br/> выпавшего цвета</p>
+
+            {props.wheelStoped && props.skipNextMove && 
+              <div>
+                <p className="gameProcessDescr">Пропусти ход</p>
+                <button className="btn green gameProcessBtn" onClick={props.skipNextMoveHandler}>Следующий игрок</button>
+              </div>
             }
-            {props.wheelStoped &&
-              <div className="eatBtns">
-              <button className="btn green" onClick={()=>{props.eatHandler(true)}}>Съел</button>
-              <button className="btn gray" onClick={()=>{props.eatHandler(false)}}>Не съел</button>
-            </div>
+
+            {props.wheelStoped && (props.eatTwoSweets || props.closedEyes) && 
+              <div>
+                <p className="gameProcessDescr">
+                  {props.eatTwoSweets &&
+                    <span>Съешь 2 конфеты</span>
+                  }
+                  {props.closedEyes &&
+                    <span>Возьми конфету <br/>с закрытыми глазами</span>
+                  }
+                </p>
+                <div className="eatBtns">
+                  <button className="btn green" onClick={()=>{props.eatHandler(true)}}>Съел</button>
+                  <button className="btn gray" onClick={()=>{props.eatHandler(false)}}>Не съел</button>
+                </div>
+              </div>
+            }
+
+            {props.wheelStoped && props.treatFriend && props.chosenFriend === null &&
+              <button className="btn red gameProcessBtn" onClick={props.treatFriendHandler}>Угостить друга</button>
+            }
+
+            {((props.wheelStoped && !props.redSector) || (props.wheelStoped && props.chosenFriend !== null)) && 
+              <div>
+                {(props.wheelStoped && !props.redSector) &&
+                <p className="gameProcessDescr">Возьми конфету<br/> выпавшего цвета</p>
+                }
+                <div className="eatBtns">
+                  <button className="btn green" onClick={()=>{props.eatHandler(true)}}>Съел</button>
+                  <button className="btn gray" onClick={()=>{props.eatHandler(false)}}>Не съел</button>
+                </div>
+              </div>
             }
           </div>
         </div>
@@ -550,29 +865,19 @@ const GameProcessPage = (props) => {
 
       <div className="wheelWrapper">
         <div className="wheel">
-          <svg className="wheelArrow" xmlns="http://www.w3.org/2000/svg" width="37" height="33" viewBox="0 0 37 33" fill="none">
-            <g filter="url(#filter0_d_332_14851)">
-              <path d="M20.232 27.9948C19.4621 29.3279 17.5379 29.3279 16.768 27.9948L5.07698 7.74875C4.30705 6.41541 5.26929 4.74862 6.80895 4.74862L30.1911 4.74862C31.7307 4.74862 32.693 6.41542 31.923 7.74875L20.232 27.9948Z" fill="#FBD700"/>
-            </g>
-            <defs>
-              <filter id="filter0_d_332_14851" x="0.805969" y="0.748535" width="35.3881" height="32.2461" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                <feOffset/>
-                <feGaussianBlur stdDeviation="2"/>
-                <feComposite in2="hardAlpha" operator="out"/>
-                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.16 0"/>
-                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_332_14851"/>
-                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_332_14851" result="shape"/>
-              </filter>
-            </defs>
+          <svg className="wheelArrow" xmlns="http://www.w3.org/2000/svg" width="27" height="24" viewBox="0 0 27 24" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 1.913C0 2.966 2.609 8.253 5.798 13.663C9.977 20.752 12.14 23.5 13.541 23.5C14.953 23.5 17.061 20.764 21.243 13.506C24.409 8.009 27 2.722 27 1.756C27 0.168 25.708 0 13.5 0C0.871 0 0 0.123 0 1.913Z" fill="#FBD700"></path>
           </svg>
           <img className={`rotating${props.currentRotate}`} src={`img/wheel${!verticalOrientation? '-2' : ''}.png`} />
         </div>
         <div className="monsters">
-            <img src="img/monster-left.png" className="monster monsterLeft" />
-            <img src="img/monster.png"  className="monster monsterRight" />
+          <div className={'monsterLeftWrap'}>
+            <img src="img/monster.png" className={`monster monsterLeft ${props.wheelIsRotating? 'animate' : ''}`} />
+          </div>  
+          <div className={'monsterRightWrap'}>
+            <img src="img/monster.png" className={`monster monsterRight ${props.wheelIsRotating? 'animate' : ''}`} />
           </div>
+        </div>
       </div>
     </div>
   );
