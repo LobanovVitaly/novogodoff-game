@@ -325,6 +325,8 @@ class Game extends React.Component{
       if(!wasEaten){
         players.pop();
       }
+
+      // либо через filter()
       
       this.setState({
           wheelIsRotating: false,
@@ -496,8 +498,8 @@ const StartPage = (props) => {
     return (
       <div className="startPage">
         <div id="preloadImg">
-          <img src="https://game-files.novogodoff.ru/img/bg-blue.png" />
-          <img src="https://game-files.novogodoff.ru/img/bg-gray.png" />
+          <img src="/img/bg-blue.png" />
+          <img src="/img/bg-gray.png" />
         </div>
         {!verticalOrientation &&
           <div className="monsters">
